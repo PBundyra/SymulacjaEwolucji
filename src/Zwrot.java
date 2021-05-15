@@ -14,7 +14,7 @@ public enum Zwrot {
         return this.wart;
     }
 
-    private static Zwrot dajZwrotOInd(int ind) {
+    public static Zwrot dajZwrotOInd(int ind) {
         Zwrot wyn = null;
         for (Zwrot zwrot : Zwrot.values()) {
             if (zwrot.getWart() == ind) {

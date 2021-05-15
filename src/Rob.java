@@ -13,21 +13,14 @@ public class Rob {
         this.wiek = 0;
         this.program = Parametry.getStringParam().get("pocz_progr");
         this.energia = Parametry.getIntParam().get("pocz_energia");
-        Random r = new Random();
-        switch (r.nextInt(4)) {
-            case 0:
-                this.zwrot = Zwrot.Polnoc;
-                break;
-            case 1:
-                this.zwrot = Zwrot.Poludnie;
-                break;
-            case 2:
-                this.zwrot = Zwrot.Wschod;
-                break;
-            case 3:
-                this.zwrot = Zwrot.Zachod;
-                break;
-        }
+        this.zwrot = Zwrot.dajZwrotOInd(new Random().nextInt(5));
+    }
+
+    public Rob(int energia, Zwrot zwrot, ArrayList<String> program) {
+        this.wiek = 0;
+        this.energia = energia;
+        this.zwrot = zwrot;
+        this.program = program;
     }
 
     private void zmutuj() {
@@ -49,33 +42,12 @@ public class Rob {
         }
     }
 
-    public Rob(int energia, Zwrot zwrot, ArrayList<String> program) {
-        this.wiek = 0;
-        this.energia = energia;
-        this.zwrot = zwrot;
-        this.program = program;
-    }
-
     public void powiel(Plansza plansza) {
         if (this.energia >= Parametry.getIntParam().get("limit_powielania")) {
             if (Math.random() <= Parametry.getDoubleParam().get("pr_powielenia")) {
                 int energiaPotomka = (int) ((Parametry.getDoubleParam().get("ułamek_energii_rodzica") * (double) energia));
                 this.energia -= energiaPotomka;
-                Zwrot zwrotPotomka;
-                switch (this.zwrot) {
-                    case Poludnie:
-                        zwrotPotomka = Zwrot.Polnoc;
-                        break;
-                    case Polnoc:
-                        zwrotPotomka = Zwrot.Poludnie;
-                        break;
-                    case Wschod:
-                        zwrotPotomka = Zwrot.Zachod;
-                        break;
-                    default:
-                        zwrotPotomka = Zwrot.Wschod;
-                        break;
-                }
+                Zwrot zwrotPotomka = Zwrot.dajPrzeciwny(this.zwrot);
                 ArrayList<String> kopiaProgramu = new ArrayList<String>(this.program);
                 Rob potomek = new Rob(energiaPotomka, zwrotPotomka, kopiaProgramu);
                 potomek.zmutuj();
