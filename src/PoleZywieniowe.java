@@ -2,12 +2,13 @@ public class PoleZywieniowe extends Pole{
     private int ileDoNowegoPozywienia;
     private boolean czyJestPozywienie;
 
-    public PoleZywieniowe(){
+    public PoleZywieniowe(int x, int y){
+        super(x, y);
         this.ileDoNowegoPozywienia = 0;
         this.czyJestPozywienie = true;
     }
 
-    public boolean czyJestPozywienie() {
+    public boolean getCzyJestPozywienie() {
         return czyJestPozywienie;
     }
 

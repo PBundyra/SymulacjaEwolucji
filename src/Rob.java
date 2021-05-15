@@ -9,19 +9,23 @@ public class Rob {
     private int wiek;
     private int energia;
 
-    public Rob() {
+    public Rob(Pole polozenie) {
         this.wiek = 0;
         this.program = Parametry.getStringParam().get("pocz_progr");
         this.energia = Parametry.getIntParam().get("pocz_energia");
-        this.zwrot = Zwrot.dajZwrotOInd(new Random().nextInt(5));
+        this.zwrot = Zwrot.dajLosowyZwrot();
+        this.polozenie = polozenie;
     }
 
-    public Rob(int energia, Zwrot zwrot, ArrayList<String> program) {
-        this.wiek = 0;
+    public Rob(int energia, Zwrot zwrot, ArrayList<String> program, Pole polozenie) {
+        this.wiek = -1;
         this.energia = energia;
         this.zwrot = zwrot;
+        this.polozenie = polozenie;
         this.program = program;
+
     }
+
 
     private void zmutuj() {
         Random r = new Random();
@@ -42,16 +46,16 @@ public class Rob {
         }
     }
 
-    public void powiel(Plansza plansza) {
+    public void powiel() {
         if (this.energia >= Parametry.getIntParam().get("limit_powielania")) {
             if (Math.random() <= Parametry.getDoubleParam().get("pr_powielenia")) {
                 int energiaPotomka = (int) ((Parametry.getDoubleParam().get("ułamek_energii_rodzica") * (double) energia));
                 this.energia -= energiaPotomka;
                 Zwrot zwrotPotomka = Zwrot.dajPrzeciwny(this.zwrot);
                 ArrayList<String> kopiaProgramu = new ArrayList<String>(this.program);
-                Rob potomek = new Rob(energiaPotomka, zwrotPotomka, kopiaProgramu);
+                Rob potomek = new Rob(energiaPotomka, zwrotPotomka, kopiaProgramu, polozenie);
                 potomek.zmutuj();
-                plansza.dodajRoba(potomek);
+                Plansza.dodajRoba(potomek);
             }
         }
     }
@@ -61,11 +65,57 @@ public class Rob {
     }
 
     public void zmniejszEnergie() {
-        this.energia -= Parametry.getIntParam().get("kosz_tury");
+        this.energia -= Parametry.getIntParam().get("koszt_tury");
     }
 
     public void wykonajProgram() {
-    }
+            for (String instrukcja : this.program) {
+
+                if (energia <= 0) break;
+
+                switch (instrukcja) {
+                    case "l":
+                        this.zwrot = Zwrot.obrocWLewo(this.zwrot);
+                    case "p":
+                        this.zwrot = Zwrot.obrocWPrawo(this.zwrot);
+                        break;
+                    case "i":
+                        this.polozenie = Plansza.getPlansza()[Math.floorMod(this.polozenie.getWspolrzedne().get("x")
+                                + zwrot.dajX() - 1, Plansza.dajSzerPlanszy())]
+                                [Math.floorMod(this.polozenie.getWspolrzedne().get("y")
+                                + zwrot.dajY() - 1, Plansza.dajDlPlanszy())];
+                        if (this.polozenie.getClass().getSimpleName() == "PoleZywieniowe" &&
+                                ((PoleZywieniowe) this.polozenie).getCzyJestPozywienie()) {
+                            ((PoleZywieniowe) this.polozenie).zjedzMnie();
+                            this.energia += Parametry.getIntParam().get("ile_daje_jedzenie");
+                        }
+                        break;
+                    case "w":
+                        for (int i = 0; i < 4; i++) {
+                            Zwrot pomZwrot = Zwrot.obrocWLewo(this.zwrot);
+                            int pomX = Math.floorMod(polozenie.getWspolrzedne().get("x") + pomZwrot.dajX() - 1, Plansza.dajSzerPlanszy());
+                            int pomY = Math.floorMod(polozenie.getWspolrzedne().get("y") + pomZwrot.dajY() - 1, Plansza.dajDlPlanszy());
+                            Pole pomPole = Plansza.getPlansza()[pomX][pomY];
+                            if (pomPole.getClass().getSimpleName() == "PoleZywieniowe" && ((PoleZywieniowe) pomPole).getCzyJestPozywienie())
+                                this.zwrot = pomZwrot;
+                                break;
+                        }
+                        break;
+                    case "j":
+                        ArrayList<Pole> sasiedzi8 = Plansza.daj8Sasiadow(this.polozenie);
+                        for (Pole sasiad : sasiedzi8) {
+                            if (sasiad.getClass().getSimpleName() == "PoleZywieniowe" &&
+                                    ((PoleZywieniowe) sasiad).getCzyJestPozywienie()){
+                                this.polozenie = sasiad;
+                                this.energia += Parametry.getIntParam().get("ile_daje_jedzenie");
+                                break;
+                            }
+                        }
+                        break;
+                }
+                energia--;
+            }
+        }
 
     public boolean czyZywy() {
         return energia > 0;

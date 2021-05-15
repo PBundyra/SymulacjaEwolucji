@@ -1,15 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class Plansza {
-    private List<Rob> roby;
-    private Pole[][] plansza;
-    private int dlugoscPlanszy;
-    private int szerokoscPlanszy;
-    private List<Rob> noweRoby;
+    private ArrayList<Rob> roby;
+    private static Pole[][] plansza;
+    private static int dlugoscPlanszy;
+    private static int szerokoscPlanszy;
+    private static ArrayList<Rob> noweRoby;
 
     private boolean czyPoprawnyWiersz(String wiersz) {
         char c;
@@ -58,18 +57,20 @@ public class Plansza {
         Scanner sc = new Scanner(input);
         String wiersz;
 
-        for (int i = 0; i < dlugoscPlanszy; i++) {
+        for (int y = 0; y < dlugoscPlanszy; y++) {
             wiersz = sc.nextLine();
-            for (int j = 0; j < szerokoscPlanszy; j++) {
-                if (wiersz.charAt(j) == 'x') {
-                    plansza[j][i] = new PoleZywieniowe();
-                } else plansza[j][i] = new Pole();
+            for (int x = 0; x < szerokoscPlanszy; x++) {
+                if (wiersz.charAt(x) == 'x') {
+                    plansza[x][y] = new PoleZywieniowe(x, y);
+                } else plansza[x][y] = new Pole(x, y);
             }
         }
 
+        sc.close();
+
         this.roby = new ArrayList<Rob>();
-        for (int i = 0; i < Parametry.getIntParam().get("pocz_ile_robow"); i++) {
-            roby.add(new Rob());
+        for (int i = 0; i < Parametry.getIntParam().get("pocz_ile_robów"); i++) {
+            roby.add(new Rob(plansza[new Random().nextInt(szerokoscPlanszy)][new Random().nextInt(dlugoscPlanszy)]));
         }
         this.noweRoby = new ArrayList<Rob>();
     }
@@ -87,7 +88,7 @@ public class Plansza {
         return "";
     }
 
-    public void dodajRoba(Rob rob){
+    public static void dodajRoba(Rob rob) {
         noweRoby.add(0, rob);
     }
 
@@ -95,7 +96,7 @@ public class Plansza {
 
         roby.forEach((rob) -> rob.wykonajProgram());
         roby.forEach((rob) -> rob.zmniejszEnergie());
-        roby.forEach((rob) -> rob.powiel(this));
+        roby.forEach((rob) -> rob.powiel());
         roby.addAll(0, noweRoby);
         noweRoby.clear();
         roby.removeAll(roby.stream().filter((rob) -> !rob.czyZywy()).collect(Collectors.toList()));
@@ -162,7 +163,7 @@ public class Plansza {
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {
                 if (pole.getClass().getSimpleName() == "PoleZywieniowe") {
-                    if (((PoleZywieniowe) pole).czyJestPozywienie()) zyw++;
+                    if (((PoleZywieniowe) pole).getCzyJestPozywienie()) zyw++;
                 }
             }
         }
@@ -170,5 +171,30 @@ public class Plansza {
         System.out.print(", żyw: " + zyw);
         this.wypiszStatRobow();
         System.out.println();
+    }
+
+    public static ArrayList<Pole> daj8Sasiadow(Pole pole) {
+        ArrayList<Pole> sasiedzi = new ArrayList<Pole>();
+        int x = pole.getWspolrzedne().get("x"), y = pole.getWspolrzedne().get("y");
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i != 0 && j != 0) {
+                    sasiedzi.add(plansza[Math.floorMod(x + i, szerokoscPlanszy)][Math.floorMod(y + j, szerokoscPlanszy)]);
+                }
+            }
+        }
+        return sasiedzi;
+    }
+
+    public static Pole[][] getPlansza() {
+        return plansza;
+    }
+
+    public static int dajDlPlanszy() {
+        return dlugoscPlanszy;
+    }
+
+    public static int dajSzerPlanszy() {
+        return szerokoscPlanszy;
     }
 }

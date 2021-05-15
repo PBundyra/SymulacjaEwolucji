@@ -10,9 +10,9 @@ public class Parametry {
             "pr_usunięcia_instr", "pr_dodania_instr", "pr_zmiany_instr");
     private final List<String> poprStringParam = Arrays.asList("pocz_progr", "spis_instr");
     private final List<String> poprInstr = Arrays.asList("l", "p", "i", "w", "j");
-    private static HashMap<String, Integer> intParam;
-    private static HashMap<String, Double> doubleParam;
-    private static HashMap<String, ArrayList<String>> stringParam;
+    private static HashMap<String, Integer> intParam = new HashMap<String,Integer>();
+    private static HashMap<String, Double> doubleParam = new HashMap<String,Double>();
+    private static HashMap<String, ArrayList<String>> stringParam = new HashMap<String, ArrayList<String>>();
 
     private boolean czySlowoZawarteWPuli(ArrayList<String> slowo, List pula) {
         boolean wyn = true;
@@ -32,26 +32,26 @@ public class Parametry {
 
     public Parametry(File input) throws FileNotFoundException {
         Scanner sc = new Scanner(input).useLocale(Locale.US);
-        String i;
+        String s;
         int licznik = 0;
 
         while (sc.hasNextLine()) {
-            i = sc.next();
+            s = sc.next();
             licznik++;
 
-            if (poprIntParam.contains(i)) {
-                assert intParam.containsKey(i) : "Niepoprawne dane wejściowe w parametry.txt";
+            if (poprIntParam.contains(s)) {
+                assert !(intParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
                 Integer wart = sc.nextInt();
                 assert wart >= 0 : "Niepoprawne dane wejściowe w parametry.txt";
-                intParam.put(i, wart);
-            } else if (poprDoubleParam.contains(i)) {
-                assert doubleParam.containsKey(i) : "Niepoprawne dane wejściowe w parametry.txt";
+                intParam.put(s, wart);
+            } else if (poprDoubleParam.contains(s)) {
+                assert !(doubleParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
                 Double wart = sc.nextDouble();
                 assert (wart >= 0 && wart <= 1) : "Niepoprawne dane wejściowe w parametry.txt";
-                doubleParam.put(i, sc.nextDouble());
-            } else if (poprStringParam.contains(i)) {
-                assert stringParam.containsKey(i) : "Niepoprawne dane wejściowe w parametry.txt";
-                stringParam.put(i, new ArrayList<String>(Arrays.asList((sc.next().split("")))));
+                doubleParam.put(s, wart);
+            } else if (poprStringParam.contains(s)) {
+                assert !(stringParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
+                stringParam.put(s, new ArrayList<String>(Arrays.asList((sc.next().split("")))));
             } else
                 assert true : "Niepoprawne dane wejściowe w parametry.txt";
 

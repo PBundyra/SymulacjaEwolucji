@@ -1,41 +1,48 @@
+import java.util.Random;
+
 public enum Zwrot {
-    Polnoc(1),
-    Wschod(2),
-    Poludnie(3),
-    Zachod(4);
+    Polnoc(0, -1),
+    Poludnie(0, 1),
+    Wschod(1, 0),
+    Zachod(-1, 0);
 
-    private final int wart;
+    private final int x, y;
 
-    private Zwrot(int wart) {
-        this.wart = wart;
+    private Zwrot(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    private int getWart() {
-        return this.wart;
+    public int dajX() {
+        return this.x;
     }
 
-    public static Zwrot dajZwrotOInd(int ind) {
-        Zwrot wyn = null;
+    public int dajY() {
+        return this.y;
+    }
+    
+    public static Zwrot dajLosowyZwrot() {
+        return Zwrot.values()[new Random().nextInt(Zwrot.values().length)];
+    }
+
+    private static Zwrot dajZwrotOWspol(int x, int y) {
         for (Zwrot zwrot : Zwrot.values()) {
-            if (zwrot.getWart() == ind) {
-                wyn = zwrot;
+            if (zwrot.dajX() == x && zwrot.dajY() == y) {
+                return zwrot;
             }
         }
-        return wyn;
+        return null;
     }
 
     public static Zwrot dajPrzeciwny(Zwrot zwrotWejsciowy) {
-        int ind = (zwrotWejsciowy.wart + 2) % 4;
-        return dajZwrotOInd(ind);
+        return dajZwrotOWspol(-(zwrotWejsciowy.dajX()), -(zwrotWejsciowy.dajY()));
     }
 
     public static Zwrot obrocWLewo(Zwrot zwrotWejsciowy) {
-        int ind = (zwrotWejsciowy.wart - 1) % 4;
-        return dajZwrotOInd(ind);
+        return dajZwrotOWspol(zwrotWejsciowy.dajY(), -zwrotWejsciowy.dajX());
     }
 
     public static Zwrot obrocWPrawo(Zwrot zwrotWejsciowy) {
-        int ind = (zwrotWejsciowy.wart + 1) % 4;
-        return dajZwrotOInd(ind);
+        return dajZwrotOWspol(-zwrotWejsciowy.dajY(), zwrotWejsciowy.dajX());
     }
 }

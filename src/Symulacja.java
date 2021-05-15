@@ -16,10 +16,8 @@ public class Symulacja {
 
         for (int i = 0; i < Parametry.getIntParam().get("ile_tur"); i++) {
             plansza.wykonajTure();
-            if ((i + 1) % Parametry.getIntParam().get("co_ile_wypisz") == 0) {
-                System.out.print((i +1) +", ");
-                plansza.wypiszStan();
-            }
+            System.out.print((i + 1) + ", ");
+            plansza.wypiszStan();
         }
     }
 }
