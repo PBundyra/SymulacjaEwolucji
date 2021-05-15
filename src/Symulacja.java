@@ -6,14 +6,17 @@ public class Symulacja {
 
         Parametry parametry = new Parametry(new File(args[1]));
         System.out.println(parametry);
-        Plansza plansza = new Plansza(new File(args[0]), parametry);
+        Plansza plansza = new Plansza(new File(args[0]));
         System.out.print(plansza);
 
         System.out.print("STAN WEJSCIOWY: ");
         plansza.wypiszStan();
-        for (int i = 0; i < parametry.getIleTur(); i++) {
+
+        Parametry.getIntParam().get("ile_tur");
+
+        for (int i = 0; i < Parametry.getIntParam().get("ile_tur"); i++) {
             plansza.wykonajTure();
-            if ((i + 1) % parametry.getCoIleWypisz() == 0) {
+            if ((i + 1) % Parametry.getIntParam().get("co_ile_wypisz") == 0) {
                 System.out.print((i +1) +", ");
                 plansza.wypiszStan();
             }

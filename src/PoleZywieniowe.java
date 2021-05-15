@@ -1,12 +1,10 @@
 public class PoleZywieniowe extends Pole{
     private int ileDoNowegoPozywienia;
     private boolean czyJestPozywienie;
-    private Parametry parametry;
 
-    public PoleZywieniowe(Parametry parametry){
+    public PoleZywieniowe(){
         this.ileDoNowegoPozywienia = 0;
         this.czyJestPozywienie = true;
-        this.parametry = parametry;
     }
 
     public boolean czyJestPozywienie() {
@@ -15,7 +13,7 @@ public class PoleZywieniowe extends Pole{
 
     public void zjedzMnie(){
         this.czyJestPozywienie = false;
-        this.ileDoNowegoPozywienia = parametry.getIleRosnieJedzenie();
+        this.ileDoNowegoPozywienia = Parametry.getIntParam().get("ile_rośnie_jedzenie");
     }
 
     public void zmniejszCzasOdnowienia(){

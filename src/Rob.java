@@ -1,20 +1,18 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+//STRING BO MOZE BYC PRZYDATNE DO WIELO CHARAKETROWYCH INSTRUKCJI
 public class Rob {
     private Zwrot zwrot;
     private Pole polozenie;
     private ArrayList<String> program;
     private int wiek;
     private int energia;
-    private Parametry parametry;
 
-    public Rob(Parametry parametry) {
-        this.parametry = parametry;
+    public Rob() {
         this.wiek = 0;
-        this.program = new ArrayList<String>(parametry.getPoczProgr().size());
-        program = parametry.getPoczProgr();
-        this.energia = parametry.getPoczEnergia();
+        this.program = Parametry.getStringParam().get("pocz_progr");
+        this.energia = Parametry.getIntParam().get("pocz_energia");
         Random r = new Random();
         switch (r.nextInt(4)) {
             case 0:
@@ -34,36 +32,34 @@ public class Rob {
 
     private void zmutuj() {
         Random r = new Random();
-        if (Math.random() <= parametry.getPrUsunieciaInstr()) {
+        if (Math.random() <= Parametry.getDoubleParam().get("pr_usunięcia_instr")) {
             if (this.program.size() > 0) this.program.remove(this.program.size() - 1);
         }
-        if (Math.random() <= parametry.getPrDodaniaInstr()) {
-            int ind = r.nextInt(parametry.getSpisInstr().length());
-            String s = String.valueOf(parametry.getSpisInstr().charAt(ind));
-            this.program.add(0, s);
+        if (Math.random() <= Parametry.getDoubleParam().get("pr_dodania_instr")) {
+            int ind = r.nextInt(Parametry.getStringParam().get("spis_instr").size());
+            this.program.add(0, Parametry.getStringParam().get("spis_instr").get(ind));
         }
-        if (Math.random() <= parametry.getPrZmianyInstr()) {
+        if (Math.random() <= Parametry.getDoubleParam().get("pr_zmiany_instr")) {
             if (this.program.size() > 0) {
-                int ind = r.nextInt(parametry.getSpisInstr().length());
-                String s = String.valueOf(parametry.getSpisInstr().charAt(ind));
+                int ind = r.nextInt(Parametry.getStringParam().get("spis_instr").size());
+                String s = Parametry.getStringParam().get("spis_instr").get(ind);
                 ind = r.nextInt(this.program.size());
                 this.program.set(ind, s);
             }
         }
     }
 
-    public Rob(int energia, Zwrot zwrot, Parametry parametry, ArrayList<String> program) {
+    public Rob(int energia, Zwrot zwrot, ArrayList<String> program) {
         this.wiek = 0;
         this.energia = energia;
         this.zwrot = zwrot;
-        this.parametry = parametry;
         this.program = program;
     }
 
     public void powiel(Plansza plansza) {
-        if (this.energia >= parametry.getLimPowielania()) {
-            if (Math.random() <= parametry.getPrPowielania()) {
-                int energiaPotomka = (int) (parametry.getUlamekEnergiiRodzica() * (double) energia);
+        if (this.energia >= Parametry.getIntParam().get("limit_powielania")) {
+            if (Math.random() <= Parametry.getDoubleParam().get("pr_powielenia")) {
+                int energiaPotomka = (int) ((Parametry.getDoubleParam().get("ułamek_energii_rodzica") * (double) energia));
                 this.energia -= energiaPotomka;
                 Zwrot zwrotPotomka;
                 switch (this.zwrot) {
@@ -81,7 +77,7 @@ public class Rob {
                         break;
                 }
                 ArrayList<String> kopiaProgramu = new ArrayList<String>(this.program);
-                Rob potomek = new Rob(energiaPotomka, zwrotPotomka, parametry, kopiaProgramu);
+                Rob potomek = new Rob(energiaPotomka, zwrotPotomka, kopiaProgramu);
                 potomek.zmutuj();
                 plansza.dodajRoba(potomek);
             }
@@ -93,7 +89,7 @@ public class Rob {
     }
 
     public void zmniejszEnergie() {
-        this.energia -= parametry.getKosztTury();
+        this.energia -= Parametry.getIntParam().get("kosz_tury");
     }
 
     public void wykonajProgram() {

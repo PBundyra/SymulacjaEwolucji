@@ -51,7 +51,7 @@ public class Plansza {
         return true;
     }
 
-    public Plansza(File input, Parametry parametry) throws FileNotFoundException {
+    public Plansza(File input) throws FileNotFoundException {
 
         assert czyPoprawneWejscie(input) : "Niepoprawne dane wejściowe w plansza.txt";
         this.plansza = new Pole[this.szerokoscPlanszy][this.dlugoscPlanszy];
@@ -62,14 +62,14 @@ public class Plansza {
             wiersz = sc.nextLine();
             for (int j = 0; j < szerokoscPlanszy; j++) {
                 if (wiersz.charAt(j) == 'x') {
-                    plansza[j][i] = new PoleZywieniowe(parametry);
+                    plansza[j][i] = new PoleZywieniowe();
                 } else plansza[j][i] = new Pole();
             }
         }
 
         this.roby = new ArrayList<Rob>();
-        for (int i = 0; i < parametry.getPoczIleRobow(); i++) {
-            roby.add(new Rob(parametry));
+        for (int i = 0; i < Parametry.getIntParam().get("pocz_ile_robow"); i++) {
+            roby.add(new Rob());
         }
         this.noweRoby = new ArrayList<Rob>();
     }
