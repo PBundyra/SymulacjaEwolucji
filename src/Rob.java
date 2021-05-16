@@ -30,28 +30,13 @@ public class Rob {
     private void zmutuj() {
         Random r = new Random();
         if (Math.random() <= Parametry.getDoubleParam().get("pr_usunięcia_instr") && program.size() > 0) {
-            Plansza.Usun();
-//                System.out.println("-------------------");
-
-//                System.out.println("USUWAM!!!");
             int ind = this.program.size() - 1;
-            System.out.println(program);
             this.program.remove(ind);
-            System.out.println(program);
-            System.out.println("-------------------");
         }
         if (Math.random() <= Parametry.getDoubleParam().get("pr_dodania_instr")) {
-            Plansza.Dodaj();
-//            System.out.println(Parametry.getStringParam().get("spis_instr"));
             int instr = r.nextInt(Parametry.getStringParam().get("spis_instr").size());
-//            System.out.println(ind + " - " + Parametry.getStringParam().get("spis_instr").get(ind));
-//            System.out.println("-------------------");
-//            System.out.println("DODAJE!!!");
-            System.out.println(program);
             int ind = this.program.size();
             this.program.add(ind, Parametry.getStringParam().get("spis_instr").get(instr));
-            System.out.println(program);
-            System.out.println("-------------------");
 
         }
         if (Math.random() <= Parametry.getDoubleParam().get("pr_zmiany_instr") && program.size() > 0) {
@@ -108,8 +93,8 @@ public class Rob {
                 case "w":
                     for (int i = 0; i < 4; i++) {
                         Zwrot pomZwrot = Zwrot.obrocWLewo(this.zwrot);
-                        int pomX = Math.floorMod(polozenie.getWspolrzedne().get("x") + pomZwrot.dajX() - 1, Plansza.dajSzerPlanszy());
-                        int pomY = Math.floorMod(polozenie.getWspolrzedne().get("y") + pomZwrot.dajY() - 1, Plansza.dajDlPlanszy());
+                        int pomX = Math.floorMod(polozenie.getWspolrzedne().get("x") + pomZwrot.dajX(), Plansza.dajSzerPlanszy());
+                        int pomY = Math.floorMod(polozenie.getWspolrzedne().get("y") + pomZwrot.dajY(), Plansza.dajDlPlanszy());
                         Pole pomPole = Plansza.getPlansza()[pomX][pomY];
                         if (pomPole.getClass().getSimpleName().equals("PoleZywieniowe") && ((PoleZywieniowe) pomPole).getCzyJestPozywienie()) {
                             this.zwrot = pomZwrot;
@@ -119,21 +104,11 @@ public class Rob {
                     break;
                 case "j":
                     ArrayList<Pole> sasiedzi = Plansza.daj8Sasiadow(this.polozenie);
-                    boolean wykonano = false;
                     for (Pole sasiad : sasiedzi) {
-                        if(zjedzJesliMozliwe(sasiad) && !wykonano){
+                        if(zjedzJesliMozliwe(sasiad)){
                             polozenie = sasiad;
-                            wykonano = true;
                             break;
                         }
-//                        if (wykonano)break;
-//                        if (sasiad.getClass().getSimpleName().equals("PoleZywieniowe") &&
-//                                ((PoleZywieniowe) sasiad).getCzyJestPozywienie()) {
-//                            this.polozenie = sasiad;
-//                            this.energia += Parametry.getIntParam().get("ile_daje_jedzenie");
-//                            ((PoleZywieniowe) this.polozenie).zjedzMnie();
-////                            wykonano = true;
-//                            break;
                     }
                     break;
             }

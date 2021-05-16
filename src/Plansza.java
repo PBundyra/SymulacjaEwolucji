@@ -8,16 +8,6 @@ public class Plansza {
     private static int dlugoscPlanszy;
     private static int szerokoscPlanszy;
     private static ArrayList<Rob> noweRoby;
-    public static int dod = 0;
-    public static int usun = 0;
-
-    public static void Dodaj() {
-        dod++;
-    }
-
-    public static void Usun() {
-        usun++;
-    }
 
     private boolean czyPoprawnyWiersz(String wiersz) {
         char c;
@@ -84,19 +74,6 @@ public class Plansza {
         noweRoby = new ArrayList<>();
     }
 
-    @Override
-    public String toString() {
-        for (int i = 0; i < dlugoscPlanszy; i++) {
-            for (int j = 0; j < szerokoscPlanszy; j++) {
-                if (plansza[j][i].getClass().getSimpleName().equals("PoleZywieniowe")) {
-                    System.out.print("x ");
-                } else System.out.print("O ");
-            }
-            System.out.println();
-        }
-        return "";
-    }
-
     public static void dodajRoba(Rob rob) {
         noweRoby.add(0, rob);
     }
@@ -120,11 +97,7 @@ public class Plansza {
         }
     }
 
-    private void wypiszZera(String s) {
-        System.out.print(", " + s + ": " + 0 + "/" + 0 + "/" + 0);
-    }
-
-    private void wypiszStatParametru(String s, int[] parametr) {
+    private void wypiszParametr(String s, int[] parametr) {
         int suma = 0, min = parametr[0], max = 0;
         for (int i : parametr) {
             min = Math.min(min, i);
@@ -136,38 +109,30 @@ public class Plansza {
     }
 
     public void wypiszRoby() {
+        int i = 0;
         for (Rob rob : roby) {
-            System.out.println("energia: " + rob.getEnergia() + " program[" + rob.getProgram().size() + "]:" +
-                    " wiek:" + rob.getWiek() + " zwrot: " + rob.getZwrot());
+            i++;
+            System.out.println("Rob" + i + " energia: " + rob.getEnergia() + " dlugość Programu: " +
+                    rob.getProgram().size() + " wiek: " + rob.getWiek() + " zwrot: " + rob.getZwrot());
         }
     }
 
     private void wypiszStatRobow() {
-
         int[] energie = new int[roby.size()];
         int[] wiek = new int[roby.size()];
         int[] dlPrg = new int[roby.size()];
-
-        if (roby.size() == 0) {
-            this.wypiszZera("prg");
-            this.wypiszZera("energ");
-            this.wypiszZera("wiek");
-            return;
-        }
 
         for (int i = 0; i < roby.size(); i++) {
             energie[i] = roby.get(i).getEnergia();
             wiek[i] = roby.get(i).getWiek();
             dlPrg[i] = roby.get(i).getProgram().size();
         }
-        wypiszStatParametru("energ", energie);
-        wypiszStatParametru("wiek", wiek);
-        wypiszStatParametru("prg", dlPrg);
+        wypiszParametr("energ", energie);
+        wypiszParametr("wiek", wiek);
+        wypiszParametr("prg", dlPrg);
     }
 
-    public void wypiszStan() {
-        System.out.print("rob: " + roby.size());
-
+    private int policzPolaZyw(){
         int zyw = 0;
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {
@@ -175,10 +140,19 @@ public class Plansza {
                         && ((PoleZywieniowe) pole).getCzyJestPozywienie()) zyw++;
             }
         }
+        return zyw;
+    }
 
-        System.out.print(", żyw: " + zyw);
+    public boolean wypiszStanSym(int numTury) {
+        if (roby.size() == 0) {
+            System.out.println("Brak żywych robów.");
+            return false;
+        }
+
+        System.out.print(numTury + ", rob: " + roby.size() +", żyw: " + policzPolaZyw());
         this.wypiszStatRobow();
         System.out.println();
+        return true;
     }
 
     public static ArrayList<Pole> daj8Sasiadow(Pole pole) {
@@ -187,7 +161,7 @@ public class Plansza {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (!(i == 0 && j == 0)) {
-                    sasiedzi.add(plansza[Math.floorMod(x + i, szerokoscPlanszy)][Math.floorMod(y + j, szerokoscPlanszy)]);
+                    sasiedzi.add(plansza[Math.floorMod(x + i, szerokoscPlanszy)][Math.floorMod(y + j, dlugoscPlanszy)]);
                 }
             }
         }

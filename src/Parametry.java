@@ -39,6 +39,7 @@ public class Parametry {
             s = sc.next();
             licznik++;
 
+            //TODO zamkna skanery
             if (poprIntParam.contains(s)) {
                 assert !(intParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
                 int wart = sc.nextInt();
