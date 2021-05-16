@@ -3,6 +3,7 @@ package swiat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+
 import wczytywanie.*;
 
 public class Plansza {
@@ -21,8 +22,12 @@ public class Plansza {
         return true;
     }
 
-    private boolean czyPoprawneWejscie(File input) throws FileNotFoundException {
-        Scanner sc = new Scanner(input);
+    /*
+     * Sprawdza czy podana plansza ma wiersze równej długości oraz zawiera tylko dozwolne znaki.
+     * Jeśli tak, funkcja ustawia odpowiednio atrybuty szerokoscPlanszy i dlugoscPlanszy
+     */
+    private boolean czyPoprawneWejscie(File plikPlanszy) throws FileNotFoundException {
+        Scanner sc = new Scanner(plikPlanszy);
 
         if (!sc.hasNextLine()) {
             sc.close();
@@ -52,11 +57,15 @@ public class Plansza {
         return true;
     }
 
-    public Plansza(File input) throws FileNotFoundException {
+    /*
+     * Konstruktor tworzy obiekt plansza oraz ArrayList'e roby, którą wypełnia odpowiednią ilością robów.
+     * Na końcu tworze ArrayList'e noweRoby, w której tymczasowo będę przechowywał stworzonych potomków.
+     */
+    public Plansza(File plikPlanszy) throws FileNotFoundException {
 
-        assert czyPoprawneWejscie(input) : "Niepoprawne dane wejściowe w plansza.txt";
+        assert czyPoprawneWejscie(plikPlanszy) : "Niepoprawne dane wejściowe w plansza.txt";
         plansza = new Pole[szerokoscPlanszy][dlugoscPlanszy];
-        Scanner sc = new Scanner(input);
+        Scanner sc = new Scanner(plikPlanszy);
         String wiersz;
 
         for (int y = 0; y < dlugoscPlanszy; y++) {
@@ -74,9 +83,14 @@ public class Plansza {
         for (int i = 0; i < Parametry.getIntParam().get("pocz_ile_robów"); i++) {
             roby.add(new Rob(plansza[new Random().nextInt(szerokoscPlanszy)][new Random().nextInt(dlugoscPlanszy)]));
         }
+
         noweRoby = new ArrayList<>();
     }
 
+    /*
+     * Funkcja dodająca "nowonarodzone" roby do ArrayList'y noweRoby.
+     * Funkcja jest wywoływana tylko przez metode powiel() w klasie Rob.
+     */
     public static void dodajRoba(Rob rob) {
         noweRoby.add(0, rob);
     }
@@ -101,6 +115,10 @@ public class Plansza {
         }
     }
 
+    /*
+     * Funkcja wypisująca najmniejszą, średnią oraz największą wartość przekazanego parametru, zgodnie
+     * ze specyfikacją.
+     */
     private void wypiszParametr(String s, int[] parametr) {
         int suma = 0, min = parametr[0], max = 0;
         for (int i : parametr) {
@@ -112,6 +130,9 @@ public class Plansza {
         System.out.print(", " + s + ": " + min + "/" + String.format("%.2f", sr) + "/" + max);
     }
 
+    /*
+     * Funkcja wypisująca podstawowe dane o Robach z ArrayList'y roby.
+     */
     public void wypiszRoby() {
         int i = 0;
         for (Rob rob : roby) {
@@ -121,7 +142,10 @@ public class Plansza {
         }
     }
 
-    private void wypiszStatRobow() {
+    /*
+     * Funkcja wypisuje najmniejszą, średnią oraz największa wartość odpowiednio: energii, wieku i długości programu.
+     */
+    private void wypiszStanRobow() {
         int[] energie = new int[roby.size()];
         int[] wiek = new int[roby.size()];
         int[] dlPrg = new int[roby.size()];
@@ -136,7 +160,7 @@ public class Plansza {
         wypiszParametr("prg", dlPrg);
     }
 
-    private int policzPolaZyw(){
+    private int policzPolaZyw() {
         int zyw = 0;
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {
@@ -147,18 +171,25 @@ public class Plansza {
         return zyw;
     }
 
+    /*
+     * Funkcja wypisująca stan symulacji i zwracająca true jeśli istnieje żywy Rob, lub wypisuje komunikat o braku
+     * żywych Robów i zwraca false
+     */
     public boolean wypiszStanSym(int numTury) {
         if (roby.size() == 0) {
             System.out.println("Brak żywych robów.");
             return false;
         }
 
-        System.out.print(numTury + ", rob: " + roby.size() +", żyw: " + policzPolaZyw());
-        this.wypiszStatRobow();
+        System.out.print(numTury + ", rob: " + roby.size() + ", żyw: " + policzPolaZyw());
+        this.wypiszStanRobow();
         System.out.println();
         return true;
     }
 
+    /*
+     * Funkcja zwracająca ArrayList'e zawierającą 8 sąsiadujących Pól z Polem przekazanym jako argument.
+     */
     public static ArrayList<Pole> daj8Sasiadow(Pole pole) {
         ArrayList<Pole> sasiedzi = new ArrayList<>();
         int x = pole.getWspolrzedne().get("x"), y = pole.getWspolrzedne().get("y");

@@ -16,7 +16,7 @@ public class PoleZywieniowe extends Pole{
         return czyJestPozywienie;
     }
 
-    public void zjedzMnie(){
+    public void zjedzPozywienie(){
         this.czyJestPozywienie = false;
         this.ileDoNowegoPozywienia = Parametry.getIntParam().get("ile_rośnie_jedzenie");
     }

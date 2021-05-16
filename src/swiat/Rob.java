@@ -2,15 +2,20 @@ package swiat;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import wczytywanie.*;
 
-//STRING BO MOZE BYC PRZYDATNE DO WIELO CHARAKETROWYCH INSTRUKCJI
+/*
+ * ArrayList'a program składa się ze danych typu String zamiast Character z uwagi na potencjalne rozszerzanie programu
+ * o wieloznakowe instrukcje
+ */
 public class Rob {
     private Zwrot zwrot;
     private Pole polozenie;
-    private ArrayList<String> program;
+    private final ArrayList<String> program;
     private int wiek;
     private int energia;
+    private Mutacja mutacja;
 
     public Rob(Pole polozenie) {
         this.wiek = 0;
@@ -18,6 +23,7 @@ public class Rob {
         this.energia = Parametry.getIntParam().get("pocz_energia");
         this.zwrot = Zwrot.dajLosowyZwrot();
         this.polozenie = polozenie;
+        this.mutacja = new Mutacja();
     }
 
     public Rob(int energia, Zwrot zwrot, ArrayList<String> program, Pole polozenie) {
@@ -26,28 +32,14 @@ public class Rob {
         this.zwrot = zwrot;
         this.polozenie = polozenie;
         this.program = program;
+        this.mutacja = new Mutacja();
 
     }
 
-
     private void zmutuj() {
-        Random r = new Random();
-        if (Math.random() <= Parametry.getDoubleParam().get("pr_usunięcia_instr") && program.size() > 0) {
-            int ind = this.program.size() - 1;
-            this.program.remove(ind);
-        }
-        if (Math.random() <= Parametry.getDoubleParam().get("pr_dodania_instr")) {
-            int instr = r.nextInt(Parametry.getStringParam().get("spis_instr").size());
-            int ind = this.program.size();
-            this.program.add(ind, Parametry.getStringParam().get("spis_instr").get(instr));
-
-        }
-        if (Math.random() <= Parametry.getDoubleParam().get("pr_zmiany_instr") && program.size() > 0) {
-            int ind = r.nextInt(Parametry.getStringParam().get("spis_instr").size());
-            String s = Parametry.getStringParam().get("spis_instr").get(ind);
-            ind = r.nextInt(this.program.size());
-            this.program.set(ind, s);
-        }
+        mutacja.usunInstr(this);
+        mutacja.dodajInstr(this);
+        mutacja.zamienInstr(this);
     }
 
     public void powiel() {
@@ -64,10 +56,14 @@ public class Rob {
         }
     }
 
+    /*
+     * Funkcja sprawdza czy na przekazanym w argumencie Polu znajduje się pożywienie.
+     * Jeśli tak to je zjada i zwraca true, jeśli nie to zwaraca false
+     */
     private boolean zjedzJesliMozliwe(Pole pole) {
         if (pole.getClass().getSimpleName().equals("PoleZywieniowe") &&
                 ((PoleZywieniowe) pole).getCzyJestPozywienie()) {
-            ((PoleZywieniowe) pole).zjedzMnie();
+            ((PoleZywieniowe) pole).zjedzPozywienie();
             this.energia += Parametry.getIntParam().get("ile_daje_jedzenie");
             return true;
         }
@@ -78,6 +74,7 @@ public class Rob {
         for (String instrukcja : this.program) {
 
             if (energia <= 0) break;
+            energia--;
 
             switch (instrukcja) {
                 case "l":
@@ -99,7 +96,8 @@ public class Rob {
                         int pomX = Math.floorMod(polozenie.getWspolrzedne().get("x") + pomZwrot.dajX(), Plansza.dajSzerPlanszy());
                         int pomY = Math.floorMod(polozenie.getWspolrzedne().get("y") + pomZwrot.dajY(), Plansza.dajDlPlanszy());
                         Pole pomPole = Plansza.getPlansza()[pomX][pomY];
-                        if (pomPole.getClass().getSimpleName().equals("PoleZywieniowe") && ((PoleZywieniowe) pomPole).getCzyJestPozywienie()) {
+                        if (pomPole.getClass().getSimpleName().equals("PoleZywieniowe")
+                                && ((PoleZywieniowe) pomPole).getCzyJestPozywienie()) {
                             this.zwrot = pomZwrot;
                             break;
                         }
@@ -108,14 +106,13 @@ public class Rob {
                 case "j":
                     ArrayList<Pole> sasiedzi = Plansza.daj8Sasiadow(this.polozenie);
                     for (Pole sasiad : sasiedzi) {
-                        if(zjedzJesliMozliwe(sasiad)){
+                        if (zjedzJesliMozliwe(sasiad)) {
                             polozenie = sasiad;
                             break;
                         }
                     }
                     break;
             }
-            energia--;
         }
     }
 

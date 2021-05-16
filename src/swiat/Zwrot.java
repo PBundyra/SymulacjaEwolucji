@@ -1,3 +1,8 @@
+/*
+ * W klasie Zwrot, znajdują się funkcjonalności dotyczące zwrotu Roba. Odpowiednie kierunki reprezentowane są przez
+ * uporządkowaną parę liczb.
+ */
+
 package swiat;
 
 import java.util.Random;

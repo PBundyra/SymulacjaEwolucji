@@ -1,3 +1,13 @@
+/*
+ * Klasa Parametry odpowiada za wczytanie danych wejściowych z pliku parametry.txt.
+ * Wykorzystuje do tego 3 HashMapy odpowiednich typów w których przechowuje zmienne typu Integer, Double
+ * oraz ArrayList<String>.
+ * W klasie znajdują się dodatkowo funkcje statyczne zwracające owe HashMapy, dzięki którym mamy dostęp do danych
+ * wejściowych z pliku parametry.txt w dowolnym miejscu programu. Jednocześnie zachowywana jest odpowiednia widoczność
+ * atrybutów, co powoduje, że dane wejściowe nie zostaną zmienione po ich wczytaniu.
+ */
+
+
 package wczytywanie;
 
 import java.io.FileNotFoundException;
@@ -12,10 +22,13 @@ public class Parametry {
             "pr_usunięcia_instr", "pr_dodania_instr", "pr_zmiany_instr");
     private final List<String> poprStringParam = Arrays.asList("pocz_progr", "spis_instr");
     private final List<String> poprInstr = Arrays.asList("l", "p", "i", "w", "j");
-    private static HashMap<String, Integer> intParam = new HashMap<>();
-    private static HashMap<String, Double> doubleParam = new HashMap<>();
-    private static HashMap<String, ArrayList<String>> stringParam = new HashMap<>();
+    private static final HashMap<String, Integer> intParam = new HashMap<>();
+    private static final HashMap<String, Double> doubleParam = new HashMap<>();
+    private static final HashMap<String, ArrayList<String>> stringParam = new HashMap<>();
 
+    /*
+     * Funkcja sprawdzająca czy ArrayList slowo zawiera tylko Stringi należace do Listy pula.
+     */
     private boolean czySlowoZawarteWPuli(ArrayList<String> slowo, List pula) {
         boolean wyn = true;
 
@@ -43,21 +56,32 @@ public class Parametry {
 
             //TODO zamkna skanery
             if (poprIntParam.contains(s)) {
-                assert !(intParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
+                if (intParam.containsKey(s)) {
+                    sc.close();
+                    assert false : "Niepoprawne dane wejściowe w parametry.txt";
+                }
                 int wart = sc.nextInt();
-                assert wart >= 0 : "Niepoprawne dane wejściowe w parametry.txt";
+                if (wart < 0) {
+                    sc.close();
+                    assert false : "Niepoprawne dane wejściowe w parametry.txt";
+                }
                 intParam.put(s, wart);
             } else if (poprDoubleParam.contains(s)) {
-                assert !(doubleParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
+                if (doubleParam.containsKey(s)) {
+                    sc.close();
+                    assert false : "Niepoprawne dane wejściowe w parametry.txt";
+                }
                 double wart = sc.nextDouble();
-                assert (wart >= 0 && wart <= 1) : "Niepoprawne dane wejściowe w parametry.txt";
+                if (wart < 0 || wart > 1){sc.close(); assert false: "Niepoprawne dane wejściowe w parametry.txt"; }
                 doubleParam.put(s, wart);
             } else if (poprStringParam.contains(s)) {
-                assert !(stringParam.containsKey(s)) : "Niepoprawne dane wejściowe w parametry.txt";
+                if (stringParam.containsKey(s)) {
+                    sc.close();
+                    assert false : "Niepoprawne dane wejściowe w parametry.txt";
+                }
                 stringParam.put(s, new ArrayList<>(Arrays.asList((sc.next().split("")))));
             } else
-                assert true : "Niepoprawne dane wejściowe w parametry.txt";
-
+                assert false : "Niepoprawne dane wejściowe w parametry.txt";
         }
 
         sc.close();

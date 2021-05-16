@@ -14,7 +14,6 @@ public class Ewolucja {
     }
 
     public void symulujEwolucje() {
-        System.out.println("STAN WEJSCIOWY ROBÓW: ");
         plansza.wypiszRoby();
         for (int i = 0; i < Parametry.getIntParam().get("ile_tur"); i++) {
             if (!plansza.wypiszStanSym(i + 1)) {
