@@ -8,7 +8,7 @@ public enum Zwrot {
 
     private final int x, y;
 
-    private Zwrot(int x, int y) {
+    Zwrot(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -20,7 +20,7 @@ public enum Zwrot {
     public int dajY() {
         return this.y;
     }
-    
+
     public static Zwrot dajLosowyZwrot() {
         return Zwrot.values()[new Random().nextInt(Zwrot.values().length)];
     }

@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Plansza {
     private ArrayList<Rob> roby;
@@ -9,6 +8,16 @@ public class Plansza {
     private static int dlugoscPlanszy;
     private static int szerokoscPlanszy;
     private static ArrayList<Rob> noweRoby;
+    public static int dod = 0;
+    public static int usun = 0;
+
+    public static void Dodaj() {
+        dod++;
+    }
+
+    public static void Usun() {
+        usun++;
+    }
 
     private boolean czyPoprawnyWiersz(String wiersz) {
         char c;
@@ -44,8 +53,8 @@ public class Plansza {
                 return false;
             }
         }
-        this.dlugoscPlanszy = liczbaWierszy;
-        this.szerokoscPlanszy = dlugoscWiersza;
+        dlugoscPlanszy = liczbaWierszy;
+        szerokoscPlanszy = dlugoscWiersza;
         sc.close();
         return true;
     }
@@ -53,7 +62,7 @@ public class Plansza {
     public Plansza(File input) throws FileNotFoundException {
 
         assert czyPoprawneWejscie(input) : "Niepoprawne dane wejściowe w plansza.txt";
-        this.plansza = new Pole[this.szerokoscPlanszy][this.dlugoscPlanszy];
+        plansza = new Pole[szerokoscPlanszy][dlugoscPlanszy];
         Scanner sc = new Scanner(input);
         String wiersz;
 
@@ -68,18 +77,18 @@ public class Plansza {
 
         sc.close();
 
-        this.roby = new ArrayList<Rob>();
+        this.roby = new ArrayList<>();
         for (int i = 0; i < Parametry.getIntParam().get("pocz_ile_robów"); i++) {
             roby.add(new Rob(plansza[new Random().nextInt(szerokoscPlanszy)][new Random().nextInt(dlugoscPlanszy)]));
         }
-        this.noweRoby = new ArrayList<Rob>();
+        noweRoby = new ArrayList<>();
     }
 
     @Override
     public String toString() {
         for (int i = 0; i < dlugoscPlanszy; i++) {
             for (int j = 0; j < szerokoscPlanszy; j++) {
-                if (plansza[j][i].getClass().getSimpleName() == "PoleZywieniowe") {
+                if (plansza[j][i].getClass().getSimpleName().equals("PoleZywieniowe")) {
                     System.out.print("x ");
                 } else System.out.print("O ");
             }
@@ -94,31 +103,55 @@ public class Plansza {
 
     public void wykonajTure() {
 
-        roby.forEach((rob) -> rob.wykonajProgram());
-        roby.forEach((rob) -> rob.zmniejszEnergie());
-        roby.forEach((rob) -> rob.powiel());
+        roby.forEach(Rob::wykonajProgram);
+        roby.forEach(Rob::zmniejszEnergie);
+        roby.forEach(Rob::powiel);
         roby.addAll(0, noweRoby);
         noweRoby.clear();
-        roby.removeAll(roby.stream().filter((rob) -> !rob.czyZywy()).collect(Collectors.toList()));
-        roby.forEach((rob) -> rob.zwiekszWiek());
+        roby.removeIf((rob) -> !rob.czyZywy());
+        roby.forEach(Rob::zwiekszWiek);
 
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {
-                if (pole.getClass().getSimpleName() == "PoleZywieniowe") {
+                if (pole.getClass().getSimpleName().equals("PoleZywieniowe")) {
                     ((PoleZywieniowe) pole).zmniejszCzasOdnowienia();
                 }
             }
         }
     }
 
+    private void wypiszZera(String s) {
+        System.out.print(", " + s + ": " + 0 + "/" + 0 + "/" + 0);
+    }
+
+    private void wypiszStatParametru(String s, int[] parametr) {
+        int suma = 0, min = parametr[0], max = 0;
+        for (int i : parametr) {
+            min = Math.min(min, i);
+            max = Math.max(max, i);
+            suma += i;
+        }
+        double sr = (double) suma / (double) parametr.length;
+        System.out.print(", " + s + ": " + min + "/" + String.format("%.2f", sr) + "/" + max);
+    }
+
+    public void wypiszRoby() {
+        for (Rob rob : roby) {
+            System.out.println("energia: " + rob.getEnergia() + " program[" + rob.getProgram().size() + "]:" +
+                    " wiek:" + rob.getWiek() + " zwrot: " + rob.getZwrot());
+        }
+    }
+
     private void wypiszStatRobow() {
 
-        int energie[] = new int[roby.size()], wiek[] = new int[roby.size()], dlPrg[] = new int[roby.size()];
+        int[] energie = new int[roby.size()];
+        int[] wiek = new int[roby.size()];
+        int[] dlPrg = new int[roby.size()];
 
         if (roby.size() == 0) {
-            System.out.print(", prg: " + 0 + "/" + 0 + "/" + 0);
-            System.out.print(", energ: " + 0 + "/" + 0 + "/" + 0);
-            System.out.print(", wiek: " + 0 + "/" + 0 + "/" + 0);
+            this.wypiszZera("prg");
+            this.wypiszZera("energ");
+            this.wypiszZera("wiek");
             return;
         }
 
@@ -127,33 +160,9 @@ public class Plansza {
             wiek[i] = roby.get(i).getWiek();
             dlPrg[i] = roby.get(i).getProgram().size();
         }
-
-        int sumaEnerg = 0, minEnerg = energie[0], maxEnerg = 0;
-        int sumaWiek = 0, minWiek = wiek[0], maxWiek = 0;
-        int sumaDlPrg = 0, minDlPrg = dlPrg[0], maxDlPrg = 0;
-
-        for (int i = 0; i < roby.size(); i++) {
-            sumaEnerg += energie[i];
-            sumaWiek += wiek[i];
-            sumaDlPrg += dlPrg[i];
-
-            if (energie[i] < minEnerg) minEnerg = energie[i];
-            if (energie[i] > maxEnerg) maxEnerg = energie[i];
-
-            if (wiek[i] < minWiek) minWiek = wiek[i];
-            if (wiek[i] > maxWiek) maxWiek = wiek[i];
-
-            if (dlPrg[i] < minDlPrg) minDlPrg = dlPrg[i];
-            if (dlPrg[i] > maxDlPrg) maxDlPrg = dlPrg[i];
-        }
-
-        double srEnerg = (double) sumaEnerg / (double) roby.size();
-        double srWiek = (double) sumaWiek / (double) roby.size();
-        double srDlPrg = (double) sumaDlPrg / (double) roby.size();
-
-        System.out.print(", prg: " + minDlPrg + "/" + String.format("%.2f", srDlPrg) + "/" + maxDlPrg);
-        System.out.print(", energ: " + minEnerg + "/" + String.format("%.2f", srEnerg) + "/" + maxEnerg);
-        System.out.print(", wiek: " + minWiek + "/" + String.format("%.2f", srWiek) + "/" + maxWiek);
+        wypiszStatParametru("energ", energie);
+        wypiszStatParametru("wiek", wiek);
+        wypiszStatParametru("prg", dlPrg);
     }
 
     public void wypiszStan() {
@@ -162,9 +171,8 @@ public class Plansza {
         int zyw = 0;
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {
-                if (pole.getClass().getSimpleName() == "PoleZywieniowe") {
-                    if (((PoleZywieniowe) pole).getCzyJestPozywienie()) zyw++;
-                }
+                if (pole.getClass().getSimpleName().equals("PoleZywieniowe")
+                        && ((PoleZywieniowe) pole).getCzyJestPozywienie()) zyw++;
             }
         }
 
@@ -174,11 +182,11 @@ public class Plansza {
     }
 
     public static ArrayList<Pole> daj8Sasiadow(Pole pole) {
-        ArrayList<Pole> sasiedzi = new ArrayList<Pole>();
+        ArrayList<Pole> sasiedzi = new ArrayList<>();
         int x = pole.getWspolrzedne().get("x"), y = pole.getWspolrzedne().get("y");
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (i != 0 && j != 0) {
+                if (!(i == 0 && j == 0)) {
                     sasiedzi.add(plansza[Math.floorMod(x + i, szerokoscPlanszy)][Math.floorMod(y + j, szerokoscPlanszy)]);
                 }
             }

@@ -12,4 +12,4 @@ limit_powielania 400
 pr_usunięcia_instr 0.28
 pr_dodania_instr 0.28
 pr_zmiany_instr 0.80
-co_ile_wypisz 2
+co_ile_wypisz 10000
