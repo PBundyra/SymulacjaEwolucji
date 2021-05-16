@@ -1,5 +1,8 @@
+package swiat;
+
 import java.util.ArrayList;
 import java.util.Random;
+import wczytywanie.*;
 
 //STRING BO MOZE BYC PRZYDATNE DO WIELO CHARAKETROWYCH INSTRUKCJI
 public class Rob {

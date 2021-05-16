@@ -1,12 +1,16 @@
+package ewolucja;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import swiat.*;
+import wczytywanie.*;
 
 public class Ewolucja {
     private static Plansza plansza;
 
     public Ewolucja (File plikPlansza,File plikParametry) throws FileNotFoundException {
         new Parametry(plikParametry);
-        this.plansza = new Plansza(plikPlansza);
+        plansza = new Plansza(plikPlansza);
     }
 
     public void symulujEwolucje() {

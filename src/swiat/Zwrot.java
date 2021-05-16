@@ -1,3 +1,5 @@
+package swiat;
+
 import java.util.Random;
 
 public enum Zwrot {

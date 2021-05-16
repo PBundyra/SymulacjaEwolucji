@@ -1,3 +1,5 @@
+package swiat;
+
 import java.util.HashMap;
 
 public class Pole {

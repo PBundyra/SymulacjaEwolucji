@@ -1,6 +1,9 @@
+package swiat;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import wczytywanie.*;
 
 public class Plansza {
     private ArrayList<Rob> roby;
@@ -87,6 +90,7 @@ public class Plansza {
         noweRoby.clear();
         roby.removeIf((rob) -> !rob.czyZywy());
         roby.forEach(Rob::zwiekszWiek);
+        Collections.shuffle(roby);
 
         for (Pole[] pola : plansza) {
             for (Pole pole : pola) {

@@ -1,3 +1,5 @@
+package wczytywanie;
+
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.File;
@@ -63,15 +65,15 @@ public class Parametry {
         this.sprawdzPoprawnosc();
     }
 
-    static HashMap<String, Integer> getIntParam() {
+    public static HashMap<String, Integer> getIntParam() {
         return intParam;
     }
 
-    static HashMap<String, Double> getDoubleParam() {
+    public static HashMap<String, Double> getDoubleParam() {
         return doubleParam;
     }
 
-    static HashMap<String, ArrayList<String>> getStringParam() {
+    public static HashMap<String, ArrayList<String>> getStringParam() {
         return stringParam;
     }
 }

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import ewolucja.*;
 
 public class Symulacja {
     public static void main(String[] args) throws FileNotFoundException {

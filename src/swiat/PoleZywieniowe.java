@@ -1,3 +1,7 @@
+package swiat;
+
+import wczytywanie.*;
+
 public class PoleZywieniowe extends Pole{
     private int ileDoNowegoPozywienia;
     private boolean czyJestPozywienie;
