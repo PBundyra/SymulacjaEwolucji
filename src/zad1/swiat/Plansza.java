@@ -64,8 +64,7 @@ public class Plansza {
      */
     public Plansza(File plikPlanszy) throws FileNotFoundException {
 
-        if (!czyPoprawneWejscie(plikPlanszy)) System.exit(2137);
-//        assert czyPoprawneWejscie(plikPlanszy) : "Niepoprawne dane wejściowe w plansza.txt";
+        if (!czyPoprawneWejscie(plikPlanszy)) assert false : "Niepoprawne dane wejściowe w pliku plansza.txt";
         plansza = new Pole[szerokoscPlanszy][dlugoscPlanszy];
         Scanner sc = new Scanner(plikPlanszy);
         String wiersz;
